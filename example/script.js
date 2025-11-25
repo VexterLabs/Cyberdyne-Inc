@@ -62,10 +62,10 @@ async function sendMessage() {
     }
     animateDots();
     try {
-        const res = await fetch("https://corsproxy.io/?https://<your-worker-name>.<your-subdomain>.workers.dev/", {
+        const res = await fetch("https://corsproxy.io/?https://api.cyberdyne-system.workers.dev/", {
             method: "POST",
             headers: {
-            "Authorization": "Bearer your_api_key",
+            "Authorization": "Bearer 12345678",
             "Content-Type": "application/json",
             },
             body: JSON.stringify({
