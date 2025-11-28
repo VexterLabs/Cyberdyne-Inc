@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Workers AI API Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --light-gray: #f8f9fa;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        .rate-limit {
+            background-color: var(--warning);
+            color: var(--dark);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .rate-limit i {
+            font-size: 1.5rem;
+        }
+        
+        .rate-limit-content h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .sidebar {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .sidebar a {
+            text-decoration: none;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .sidebar a:hover {
+            background-color: var(--light-gray);
+            color: var(--primary);
+        }
+        
+        .sidebar a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .main-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .section {
+            margin-bottom: 3rem;
+        }
+        
+        .section h2 {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--primary);
+        }
+        
+        .endpoint {
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .endpoint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .endpoint-method {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .endpoint-path {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .endpoint-description {
+            margin-bottom: 1rem;
+        }
+        
+        .endpoint-parameters, .endpoint-example {
+            margin-top: 1rem;
+        }
+        
+        .endpoint-parameters h4, .endpoint-example h4 {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+        
+        .parameter-table th, .parameter-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .parameter-table th {
+            background-color: var(--light);
+            font-weight: 600;
+        }
+        
+        .code-block {
+            background-color: var(--dark);
+            color: var(--light);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+        
+        .code-block .comment {
+            color: var(--gray);
+        }
+        
+        .code-block .key {
+            color: var(--primary);
+        }
+        
+        .code-block .string {
+            color: var(--success);
+        }
+        
+        .code-block .number {
+            color: var(--warning);
+        }
+        
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .model-card {
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow);
+            border-color: var(--primary);
+        }
+        
+        .model-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .model-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-description {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-cloud"></i>
+                <span>Cloudflare Workers AI</span>
+            </div>
+            <h1>API Documentation <span class="badge">Free Tier</span></h1>
+            <p>Powerful AI capabilities accessible through a simple API, built on Cloudflare's global network</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="rate-limit">
+            <i class="fas fa-tachometer-alt"></i>
+            <div class="rate-limit-content">
+                <h3>Rate Limiting: 10 RPM</h3>
+                <p>Maximum 10 requests per minute per IP address</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            <aside class="sidebar">
+                <h3>API Endpoints</h3>
+                <ul>
+                    <li><a href="#chat" class="active"><i class="fas fa-comments"></i> Chat</a></li>
+                    <li><a href="#embeddings"><i class="fas fa-layer-group"></i> Embeddings</a></li>
+                    <li><a href="#translate"><i class="fas fa-language"></i> Translation</a></li>
+                    <li><a href="#summarize"><i class="fas fa-file-contract"></i> Summarization</a></li>
+                    <li><a href="#image-analysis"><i class="fas fa-image"></i> Image Analysis</a></li>
+                    <li><a href="#models"><i class="fas fa-cogs"></i> Models</a></li>
+                    <li><a href="#rate-limit"><i class="fas fa-chart-bar"></i> Rate Limit Status</a></li>
+                </ul>
+            </aside>
+            
+            <main class="main-content">
+                <section id="chat" class="section">
+                    <h2><i class="fas fa-comments"></i> Chat Completion</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/chat</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Generate conversational responses using state-of-the-art language models including Llama 3, Llama 2, and Mistral.</p>
+                        </div>
+                        <div class="endpoint-parameters">
+                            <h4><i class="fas fa-list"></i> Parameters</h4>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>model</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Model to use (e.g., "llama-3-8b", "mistral-7b")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>messages</td>
+                                        <td>array</td>
+                                        <td>Yes</td>
+                                        <td>Array of message objects with role and content</td>
+                                    </tr>
+                                    <tr>
+                                        <td>temperature</td>
+                                        <td>number</td>
+                                        <td>No</td>
+                                        <td>Controls randomness (0.0 to 1.0)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>max_tokens</td>
+                                        <td>integer</td>
+                                        <td>No</td>
+                                        <td>Maximum number of tokens to generate</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="comment">// JavaScript example using fetch</span><br>
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/chat'</span>, {<br>
+                                &nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+                                &nbsp;&nbsp;headers: {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span><br>
+                                &nbsp;&nbsp;},<br>
+                                &nbsp;&nbsp;body: <span class="key">JSON</span>.stringify({<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;model: <span class="string">'llama-3-8b'</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;messages: [<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{role: <span class="string">'user'</span>, content: <span class="string">'Hello, how are you?'</span>}<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;],<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;temperature: <span class="number">0.7</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;max_tokens: <span class="number">150</span><br>
+                                &nbsp;&nbsp;})<br>
+                                });
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="embeddings" class="section">
+                    <h2><i class="fas fa-layer-group"></i> Text Embeddings</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/embeddings</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Generate vector embeddings for text input, useful for semantic search, clustering, and similarity comparisons.</p>
+                        </div>
+                        <div class="endpoint-parameters">
+                            <h4><i class="fas fa-list"></i> Parameters</h4>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>model</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Embedding model to use</td>
+                                    </tr>
+                                    <tr>
+                                        <td>input</td>
+                                        <td>string/array</td>
+                                        <td>Yes</td>
+                                        <td>Text or array of texts to embed</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/embeddings'</span>, {<br>
+                                &nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+                                &nbsp;&nbsp;headers: {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span><br>
+                                &nbsp;&nbsp;},<br>
+                                &nbsp;&nbsp;body: <span class="key">JSON</span>.stringify({<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;model: <span class="string">'text-embedding-ada'</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;input: <span class="string">'The quick brown fox jumps over the lazy dog.'</span><br>
+                                &nbsp;&nbsp;})<br>
+                                });
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="translate" class="section">
+                    <h2><i class="fas fa-language"></i> Translation</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/translate</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Translate text between multiple languages with high accuracy and contextual understanding.</p>
+                        </div>
+                        <div class="endpoint-parameters">
+                            <h4><i class="fas fa-list"></i> Parameters</h4>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>text</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Text to translate</td>
+                                    </tr>
+                                    <tr>
+                                        <td>source_lang</td>
+                                        <td>string</td>
+                                        <td>No</td>
+                                        <td>Source language code (auto-detected if not specified)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>target_lang</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Target language code (e.g., 'es', 'fr', 'de')</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/translate'</span>, {<br>
+                                &nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+                                &nbsp;&nbsp;headers: {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span><br>
+                                &nbsp;&nbsp;},<br>
+                                &nbsp;&nbsp;body: <span class="key">JSON</span>.stringify({<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;text: <span class="string">'Hello, how are you today?'</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;target_lang: <span class="string">'es'</span><br>
+                                &nbsp;&nbsp;})<br>
+                                });
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="summarize" class="section">
+                    <h2><i class="fas fa-file-contract"></i> Text Summarization</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/summarize</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Generate concise summaries of long documents while preserving key information and context.</p>
+                        </div>
+                        <div class="endpoint-parameters">
+                            <h4><i class="fas fa-list"></i> Parameters</h4>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>text</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Text to summarize</td>
+                                    </tr>
+                                    <tr>
+                                        <td>max_length</td>
+                                        <td>integer</td>
+                                        <td>No</td>
+                                        <td>Maximum length of the summary in words</td>
+                                    </tr>
+                                    <tr>
+                                        <td>format</td>
+                                        <td>string</td>
+                                        <td>No</td>
+                                        <td>Output format: 'paragraph', 'bullet_points'</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/summarize'</span>, {<br>
+                                &nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+                                &nbsp;&nbsp;headers: {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span><br>
+                                &nbsp;&nbsp;},<br>
+                                &nbsp;&nbsp;body: <span class="key">JSON</span>.stringify({<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;text: <span class="string">'Long document text goes here...'</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;max_length: <span class="number">150</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;format: <span class="string">'bullet_points'</span><br>
+                                &nbsp;&nbsp;})<br>
+                                });
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="image-analysis" class="section">
+                    <h2><i class="fas fa-image"></i> Image Analysis</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">POST</span>
+                            <span class="endpoint-path">/api/image-analysis</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Analyze images to extract information, recognize objects, scenes, and generate descriptive captions.</p>
+                        </div>
+                        <div class="endpoint-parameters">
+                            <h4><i class="fas fa-list"></i> Parameters</h4>
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>image</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Base64 encoded image or image URL</td>
+                                    </tr>
+                                    <tr>
+                                        <td>task</td>
+                                        <td>string</td>
+                                        <td>Yes</td>
+                                        <td>Analysis task: 'caption', 'objects', 'tags'</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/image-analysis'</span>, {<br>
+                                &nbsp;&nbsp;method: <span class="string">'POST'</span>,<br>
+                                &nbsp;&nbsp;headers: {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">'Content-Type'</span>: <span class="string">'application/json'</span><br>
+                                &nbsp;&nbsp;},<br>
+                                &nbsp;&nbsp;body: <span class="key">JSON</span>.stringify({<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;image: <span class="string">'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...'</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;task: <span class="string">'caption'</span><br>
+                                &nbsp;&nbsp;})<br>
+                                });
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="models" class="section">
+                    <h2><i class="fas fa-cogs"></i> Available Models</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">GET</span>
+                            <span class="endpoint-path">/api/models</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Retrieve a list of all available AI models with their capabilities and specifications.</p>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/models'</span>);<br>
+                                <span class="key">const</span> models = <span class="key">await</span> response.json();
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">Popular Models</h3>
+                    <div class="models-grid">
+                        <div class="model-card">
+                            <div class="model-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="model-name">Llama 3 8B</div>
+                            <div class="model-description">Powerful 8-billion parameter model for general chat and instruction following</div>
+                        </div>
+                        <div class="model-card">
+                            <div class="model-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="model-name">Mistral 7B</div>
+                            <div class="model-description">Efficient 7-billion parameter model with strong reasoning capabilities</div>
+                        </div>
+                        <div class="model-card">
+                            <div class="model-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="model-name">Text Embedding</div>
+                            <div class="model-description">Generate vector embeddings for semantic search and similarity</div>
+                        </div>
+                        <div class="model-card">
+                            <div class="model-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="model-name">Translation</div>
+                            <div class="model-description">Multilingual translation model supporting 100+ languages</div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="rate-limit" class="section">
+                    <h2><i class="fas fa-chart-bar"></i> Rate Limit Status</h2>
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="endpoint-method">GET</span>
+                            <span class="endpoint-path">/api/rate-limit</span>
+                        </div>
+                        <div class="endpoint-description">
+                            <p>Check your current rate limit usage and remaining requests for the current minute.</p>
+                        </div>
+                        <div class="endpoint-example">
+                            <h4><i class="fas fa-code"></i> Example Request</h4>
+                            <div class="code-block">
+                                <span class="key">const</span> response = <span class="key">await</span> fetch(<span class="string">'/api/rate-limit'</span>);<br>
+                                <span class="key">const</span> rateLimit = <span class="key">await</span> response.json();<br>
+                                <span class="comment">// Response: { used: 3, remaining: 7, reset: 1635724800 }</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-cloud"></i> Cloudflare Workers AI
+                </div>
+                <div class="footer-links">
+                    <a href="#">Documentation</a>
+                    <a href="#">API Reference</a>
+                    <a href="#">Support</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-copyright">
+                    &copy; 2023 Cloudflare Workers AI API. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update active link
+                    document.querySelectorAll('.sidebar a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // Update active link on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.sidebar a');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSection}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
